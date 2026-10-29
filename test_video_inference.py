@@ -202,9 +202,12 @@ def process_video(video_path, output_path, conf_thresh=0.25, use_custom=False):
 
 
 if __name__ == "__main__":
+    default_video = "test_media/test_video.mp4" if os.path.exists("test_media/test_video.mp4") else "test_video.mp4"
+    default_out = "test_media/test_video_annotated.mp4" if os.path.isdir("test_media") else "test_video_annotated.mp4"
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("--video", default="test_video.mp4", help="Path to input video")
-    parser.add_argument("--out", default="test_video_annotated.mp4", help="Path to output video")
+    parser.add_argument("--video", default=default_video, help="Path to input video")
+    parser.add_argument("--out", default=default_out, help="Path to output video")
     parser.add_argument("--conf", type=float, default=0.25, help="Confidence threshold")
     parser.add_argument("--use_custom", action="store_true", help="Use custom drone posture model directly")
     args = parser.parse_args()

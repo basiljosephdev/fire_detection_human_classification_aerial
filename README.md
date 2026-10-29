@@ -35,7 +35,7 @@ Victim geolocations are estimated via 3D ray-casting using UAV altitude and gimb
 | **Precision ($P$)** | **99.3%** | 94.8% |
 | **Recall ($R$)** | **99.9%** | 92.6% |
 | **mAP@0.50** | **99.5%** | 96.1% |
-| **mAP@0.50:0.95** | **79.9%** | 71.4% |
+| **mAP@0.50:0.95** | **80.6%** | 71.4% |
 | **Base Parameters** | 3.2M | 3.2M |
 | **Exported Model Size** | 12.2 MB (ONNX) | 12.2 MB (ONNX) |
 
@@ -106,7 +106,12 @@ Victim geolocations are estimated via 3D ray-casting using UAV altitude and gimb
 │       ├── fire_detector.onnx                 # Exported ONNX fire model (12MB)
 │       └── weights/best.pt                    # Trained posture checkpoint
 ├── report_assets/                   # High-res confusion matrices, loss curves, and diagrams
-├── scratch/                         # Helper utilities and evaluation scripts
+├── test_media/                      # Test media repository (images and videos)
+│   ├── test1.jpg                    # Sample aerial test scene 1
+│   ├── test2.jpg                    # Sample aerial test scene 2
+│   ├── test.jpeg                    # Sample test scene
+│   └── test_video.mp4               # Sample aerial drone test video
+├── test_and_evaluate.py             # Image testing and quantitative metrics/curves evaluation tool
 ├── test_video_inference.py          # Video demonstration with tactical HUD display
 ├── test_webcam.py                   # Live webcam testing with keypoint kinematics
 ├── yolov8n-pose.pt                  # YOLOv8n Pose estimation model
@@ -131,15 +136,39 @@ pip install -r edge/requirements.txt
 pip install ultralytics opencv-python onnx onnxruntime
 ```
 
-### 2. Video Inference & HUD Demo
+### 2. Testing Models Against Images & Computing Metrics / Curves
+
+Use `test_and_evaluate.py` to test models against images or compute exact metrics and curves:
+
+```bash
+# A. Test against all images in test_media/ (saves annotated images to test_results/)
+python test_and_evaluate.py --mode test --source test_media/
+
+# B. Test against a specific image
+python test_and_evaluate.py --mode test --source test_media/test1.jpg --conf 0.30
+
+# C. Compute quantitative metrics & generate PR curves, F1 curves, and Confusion Matrices
+python test_and_evaluate.py --mode eval --data models/training/custom_posture_dataset/data.yaml
+
+# D. Run both image testing and full metric curve generation
+python test_and_evaluate.py --mode all
+```
+
+**Generated Metric Artifacts** (saved in `evaluation_results/`):
+- `precision_recall_curve.png` (PR Curve, mAP@0.5 = 99.5%)
+- `f1_score_curve.png` (Optimal decision confidence threshold curve)
+- `confusion_matrix_normalized.png` & `confusion_matrix_counts.png`
+- `metrics_summary.json` (Structured JSON with Precision, Recall, F1, mAP50, and mAP50-95 per class)
+
+### 3. Video Inference & Tactical HUD Demo
 
 Run the video inference demo with real-time tactical overlays, victim bounding boxes, posture classification, and fire detection:
 
 ```bash
-python test_video_inference.py --video test_video.mp4 --conf 0.35 --custom
+python test_video_inference.py --video test_media/test_video.mp4 --conf 0.35 --use_custom
 ```
 
-### 3. Interactive Webcam Testing (Kinematic Pose + Custom Drone Model)
+### 4. Interactive Webcam Testing (Kinematic Pose + Custom Drone Model)
 
 Run the real-time webcam test tool:
 
@@ -150,7 +179,7 @@ python test_webcam.py --cam 0
 - Press `m` to switch between **Pose Kinematics Mode** and **Trained Drone Detector Mode**.
 - Press `q` to exit.
 
-### 4. Running the Jupyter Notebooks
+### 5. Running the Jupyter Notebooks
 
 Launch Jupyter to explore dual-inference on sample aerial imagery:
 

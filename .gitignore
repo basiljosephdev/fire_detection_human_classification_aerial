@@ -51,8 +51,11 @@ models/training/custom_posture_dataset/
 runs/
 models/training/runs/
 
-# Large output video files
+# Large output video files & generated test outputs
 test_video_annotated.mp4
+test_media/test_video_annotated.mp4
+test_results/
+evaluation_results/
 
 # Edge runtime dynamic data & logs
 edge/db/*.sqlite
