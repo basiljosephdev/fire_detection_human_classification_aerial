@@ -1,0 +1,204 @@
+Edge-AI Based UAV System for Real-Time Aerial Fire and Smoke Detection Using Jetson Nano
+Basil Joseph
+Dept. of Computer Science and Engineering (AI & Robotics)
+(SCOPE)
+VIT Chennai
+Grace Maria James
+Dept. of Computer Science and Engineering (AI & Robotics)
+(SCOPE)
+VIT Chennai
+Abstract— Rapid detection of fire in disaster-affected and inaccessible areas is critical for reducing response time and improving situational awareness. Unmanned Aerial Vehicles (UAVs) equipped with onboard artificial intelligence can provide aerial monitoring while performing detection directly at the edge, reducing dependence on remote cloud processing. This paper presents an edge-AI based UAV system for aerial fire and smoke detection using a Jetson Nano and Raspberry Pi Camera Module V2. The proposed system acquires aerial imagery through an onboard camera and performs object detection using a lightweight YOLOv8n-based fire and smoke detection model. The model is trained using the D-Fire dataset and subsequently exported to the ONNX format for deployment-oriented processing on the Jetson Nano through TensorRT. The system architecture integrates the UAV camera, onboard edge-computing platform, flight controller and AI inference pipeline to support real-time aerial monitoring. In addition to fire and smoke detection, a human action analysis module was developed using the Okutama-Action aerial dataset; however, its validation performance was insufficient for reliable deployment and the module was therefore excluded from the current functional prototype. Experimental evaluation demonstrates the feasibility of using lightweight edge AI for UAV-based fire detection while highlighting the challenges associated with aerial human-action analysis and class imbalance.
+Keywords— Edge AI, UAV, drone, fire detection, smoke detection, Jetson Nano, YOLOv8, TensorRT, aerial image analysis.
+I. INTRODUCTION
+A. Background
+Fire incidents and disaster situations often require rapid assessment of large or inaccessible areas. Conventional ground-based monitoring can be limited by difficult terrain, restricted accessibility and the time required for personnel to reach the affected location. UAVs provide an alternative approach by enabling aerial observation over a wide area while carrying lightweight sensing and computing hardware.
+The integration of artificial intelligence with UAVs enables automated interpretation of aerial imagery. Instead of transmitting all captured images to a remote server for processing, an edge-computing platform mounted directly on the UAV can perform inference locally. This approach can reduce dependence on network connectivity and support faster detection and response.
+The proposed project investigates an edge-AI architecture in which a Jetson Nano performs onboard processing of images acquired using a Raspberry Pi Camera Module V2. The original design was adapted from a Raspberry Pi/TensorFlow Lite architecture to a Jetson Nano/TensorRT implementation, with the thermal-camera path removed and an RGB camera used instead. 
+B. Problem Statement
+Conventional UAV surveillance systems may require continuous transmission of captured imagery to an external computing system for analysis. Such an approach can introduce additional communication requirements and processing latency. Furthermore, identifying fire or smoke from aerial imagery is challenging because of changes in altitude, viewing angle, scale, illumination and background conditions.
+Therefore, there is a need for a lightweight AI-based detection system capable of processing aerial imagery on an onboard computing platform while remaining suitable for deployment on a resource-constrained UAV.
+C. Proposed Approach
+This work proposes an edge-AI based UAV fire and smoke detection system in which the camera captures aerial imagery and transfers the frames to a Jetson Nano for local inference. A lightweight YOLOv8n detector is trained using the D-Fire dataset and prepared for deployment through an ONNX-to-TensorRT pipeline.
+The overall deployment pipeline consists of training the model on a PC/cloud GPU, exporting the trained model to ONNX, transferring the ONNX model to the Jetson Nano, building the TensorRT engine on the target device and finally performing inference on the Jetson Nano. This device-specific TensorRT compilation is required because TensorRT engines are optimized for the target hardware and software environment. 
+D. Objectives
+The major objectives of the project are:
+To develop a UAV-based aerial fire and smoke detection system. 
+To integrate an RGB camera with an onboard Jetson Nano edge-computing platform. 
+To train a lightweight fire and smoke detection model using the D-Fire dataset. 
+To prepare the trained model for edge deployment using ONNX and TensorRT. 
+To evaluate the detection model using appropriate object-detection metrics. 
+To perform aerial testing using the assembled UAV platform. 
+To investigate aerial human action analysis as an additional module and evaluate its suitability for the proposed system. 
+E. Scope
+The current functional prototype focuses primarily on aerial fire and smoke detection. The human action/posture analysis component was also experimentally developed using the Okutama-Action dataset but was not incorporated into the final functional system because its validation performance was insufficient for reliable deployment. The experiment achieved an overall mAP@50 of approximately 0.264, with substantial variation between action classes.
+II. RELATED WORK
+Recent advances in deep learning, UAV-based imaging, and edge computing have enabled automated analysis of aerial imagery for disaster monitoring. Several studies and datasets provide the foundation for the proposed system.
+A. Real-Time Object Detection
+Redmon et al. introduced the YOLO object-detection framework, which performs object localization and classification in a single neural-network pipeline [1]. Its emphasis on real-time inference makes the YOLO family suitable for applications where detection speed is important. In this work, the lightweight YOLOv8n architecture is used for fire and smoke detection to support deployment on the resource-constrained Jetson Nano.
+B. Edge AI and UAV Computing
+TensorFlow Lite demonstrated the feasibility of performing machine-learning inference directly on mobile and edge devices [2]. Similarly, UAV-based intelligent monitoring systems have investigated the use of onboard computing to reduce dependence on remote processing. Ramadan et al. presented an AI-powered drone and IoT framework for early forest-fire detection and prevention [3]. These works demonstrate the potential of combining UAV platforms with AI-based fire monitoring.
+The present work follows an edge-computing approach by performing the intended AI inference on an onboard Jetson Nano rather than relying entirely on a remote processing system.
+C. Fire Detection Datasets
+Venâncio et al. investigated deep CNN-based fire detection for low-power devices and introduced the D-Fire dataset, which contains annotated fire and smoke imagery [4]. The D-Fire dataset is used in this work to train the primary fire and smoke detection model.
+Chen et al. proposed the FLAME dataset for wildland-fire detection and monitoring using drone-collected RGB and infrared imagery [5]. This work demonstrates the importance of aerially acquired data for fire-monitoring applications and provides a reference for UAV-based fire detection.
+D. UAV Vision
+Zhu et al. introduced the VisDrone benchmark for computer vision tasks involving drone-captured imagery [6]. UAV imagery introduces challenges such as changes in object scale, camera viewpoint, background and camera motion. These characteristics are relevant to the proposed system because fire and human targets may appear at different scales depending on UAV altitude and camera orientation.
+E. Aerial Human Action Analysis
+Barekatain et al. introduced Okutama-Action, an aerial-view video dataset for concurrent human action detection [7]. The dataset contains aerial recordings and multiple human-action categories. In this project, Okutama-Action was investigated for the human analysis component, with Standing, Walking, Running, Lying and Sitting selected as target classes.
+The resulting human-action model, however, showed limited validation performance. The overall mAP@50 was approximately 0.264, with substantial differences between classes and particularly poor detection of the Running class. Therefore, this component was not considered sufficiently reliable for inclusion in the current functional prototype.
+F. Research Gap
+Although previous studies have investigated UAV-based fire detection and aerial human activity analysis independently, this project investigates the feasibility of combining fire/smoke detection with aerial human posture/action analysis within a unified UAV-based edge-AI system.
+The motivation is that fire detection can identify hazardous regions, while human posture or activity analysis could provide additional information about people within those regions. Such a combined system could potentially support improved situational awareness during disaster-response scenarios.
+However, integrating both tasks presents challenges related to aerial viewpoints, class distribution, model accuracy and computational constraints. In this work, the fire/smoke detection component was successfully developed, while the human-action component was experimentally trained but produced insufficient validation performance for reliable deployment. Consequently, the current prototype focuses on fire and smoke detection, while the combined human-analysis capability remains subject to further improvement.
+G. Summary of Existing Work and Proposed Direction
+The reviewed literature establishes the individual feasibility of YOLO-based object detection, edge AI, UAV fire monitoring and aerial human-action analysis. The proposed work brings these areas together in an experimental UAV architecture and evaluates the practical feasibility of deploying the resulting models on an onboard edge-computing platform.
+III. METHODOLOGY
+A. System Architecture
+The proposed system consists of an unmanned aerial vehicle equipped with an RGB camera and an onboard edge-computing platform. The Raspberry Pi Camera Module V2 is used to capture aerial imagery, while the Jetson Nano serves as the onboard computing platform for AI inference. A Pixhawk flight controller is used for UAV flight control and telemetry. The camera is connected to the Jetson Nano through its CSI interface, while the flight controller can provide telemetry through the MAVLink interface.
+The primary processing pipeline is:
+Camera → Image Acquisition → Preprocessing → YOLOv8n Fire/Smoke Detection → Detection Output
+The system is designed to perform inference locally on the UAV rather than depending on continuous cloud-based image processing. This enables the captured aerial frames to be processed close to the point of acquisition.
+Fig. 1. Overall architecture of the proposed UAV-based edge-AI fire and smoke detection system.
+B. Hardware Architecture
+The UAV platform consists of the flight platform, camera, flight controller and onboard computing unit.
+The Raspberry Pi Camera Module V2, based on the IMX219 image sensor, is used as the RGB imaging device. It is connected to the Jetson Nano through the CSI camera interface. The Jetson Nano performs the computationally intensive AI inference, while the Pixhawk flight controller handles the UAV flight-control functions and provides telemetry information.
+The major hardware components used in the system are:
+UAV frame and propulsion system 
+Pixhawk flight controller 
+Raspberry Pi Camera Module V2 
+Jetson Nano Developer Kit 
+GPS and telemetry components 
+Onboard power supply 
+Battery and electronic speed controllers 
+The separation between flight control and AI processing allows the Jetson Nano to focus on visual inference without replacing the dedicated flight-control system.
+Fig. 2. Hardware architecture of the UAV platform showing the Raspberry Pi Camera V2 connected to the Jetson Nano through the supplied CSI ribbon cable, with the Pixhawk flight controller providing flight control and telemetry.
+C. Fire and Smoke Detection Model
+A lightweight YOLOv8n object-detection model was selected for fire and smoke detection. The lightweight model was chosen because the final inference target is an onboard Jetson Nano with limited computational resources compared with desktop GPUs.
+The D-Fire dataset was used to train the model. The dataset contains two target classes:
+Smoke 
+Fire 
+The training configuration used a 640-pixel input resolution, batch size of 16 and 100 training epochs. The dataset contains 14,122 training images, 3,099 validation images and 4,306 test images. 
+The trained model produces bounding boxes and class predictions for detected fire and smoke regions.
+D. Human Action Analysis Module
+In addition to fire detection, the project investigated the possibility of incorporating aerial human action analysis into the UAV system.
+The Okutama-Action dataset was selected because it provides aerial-view human action data. Five action categories were selected for experimentation:
+Standing 
+Walking 
+Running 
+Lying 
+Sitting 
+The original annotations were converted into a YOLO-compatible object-detection format before training the human-action detector. 
+However, the resulting model achieved an overall validation mAP@50 of approximately 0.264. Performance varied substantially between classes, with Running showing almost no successful detection. 
+Therefore, the human action module was not included as a reliable component of the current functional prototype. The experiment demonstrates the feasibility of attempting the combined fire and human-analysis concept while also identifying the need for further model and dataset improvement.
+E. Model Training and Deployment Pipeline
+The AI models are trained on a separate computing platform rather than directly on the Jetson Nano. After training, the model is exported to ONNX, which acts as the portable intermediate representation between the training environment and the target edge device.
+The deployment pipeline consists of five stages:
+1. Model TrainingThe YOLOv8n model is trained using a PC or cloud GPU.
+2. ONNX ExportThe trained model is exported from the training framework into ONNX format.
+3. Model TransferThe ONNX model is transferred to the Jetson Nano.
+4. TensorRT Engine GenerationThe ONNX model is converted into a TensorRT engine directly on the Jetson Nano.
+5. Edge InferenceThe generated TensorRT engine is loaded by the edge application and used for inference on incoming camera frames.
+Fig. 3. Model training, conversion, and deployment pipeline for the fire and smoke detection model.
+This workflow is necessary because a TensorRT engine is optimized for the target GPU architecture and TensorRT environment. Consequently, the engine is generated on the Jetson Nano rather than simply copying an engine generated on another GPU.
+F. Image Acquisition and Inference
+During operation, the camera continuously captures aerial frames. On the Jetson Nano, the camera stream is acquired through the NVIDIA camera stack and passed to the inference pipeline.
+The captured frame undergoes preprocessing before being supplied to the detection model. The preprocessing includes resizing and conversion to the format expected by the trained model. The inference module then processes the frame and decodes the YOLO output into detected objects and their corresponding confidence values. 
+The simplified processing sequence is:
+Aerial Frame↓Frame Preprocessing↓YOLOv8n Inference↓Bounding-Box and Class Prediction↓Fire / Smoke Detection
+G. Overall Operational Workflow
+The complete operational concept begins with aerial image acquisition from the UAV camera. The captured frame is transferred to the Jetson Nano, where preprocessing and AI inference are performed. The detection output identifies regions classified as fire or smoke.
+The broader project architecture also provides interfaces for telemetry, GPS projection, logging and streaming; however, these components should only be reported as implemented in the paper where they have been experimentally demonstrated. The documented software architecture separates camera capture, TensorRT inference, Pixhawk communication, GPS projection, logging and streaming into individual modules.
+IV. RESULTS AND DISCUSSION
+A. Fire and Smoke Detection Results
+The trained YOLOv8n model was evaluated on a miniature D-Fire validation dataset to assess its ability to detect the two target classes, fire and smoke. The evaluation considers standard object-detection metrics, including precision, recall, mAP@50, and mAP@50–95. The evaluation was performed using the validation split of the project's mini-D-Fire test fixture.
+TABLE I
+Fire and Smoke Detection Results
+Parameter
+Method A
+Precision
+0.0043
+Recall
+1.0000
+mAP@50
+0.6633
+mAP@50-95
+0.6633
+The obtained preliminary results demonstrate that the model was able to identify the fire and smoke instances present in the validation fixture, achieving a recall of 1.0000 and an mAP@50 of 0.6633. The mAP@50–95 was also measured as 0.6633. However, the relatively low precision value of 0.0043 indicates a high number of false-positive detections in this evaluation and highlights the need for further training and validation on the complete D-Fire dataset.
+For class-wise evaluation, the recorded mAP@50–95 was 0.9950 for smoke and 0.3317 for fire. These results indicate substantially different detection performance between the two target classes. Since the current evaluation was conducted on a miniature validation fixture rather than the complete D-Fire dataset, these values are treated as preliminary results and are not considered representative of the final model's performance on the full dataset.
+The YOLOv8n architecture was selected with consideration for both detection capability and computational suitability for eventual deployment on the NVIDIA Jetson Nano. Further evaluation on the complete D-Fire dataset is required to establish the final detection performance of the proposed system.
+B. Training Performance
+The training process was performed using the D-Fire dataset with the YOLOv8n architecture. The model was trained for 100 epochs using a 640-pixel input resolution and batch size of 16.
+FIGURE OF TRAINING IMAGES DATA
+C. Human Action Detection Results
+The human action analysis module was evaluated separately using the prepared Okutama-Action dataset.
+The five selected classes were:
+Standing 
+Walking 
+Running 
+Lying 
+Sitting 
+The model achieved an overall validation mAP@50 of approximately 0.264. Class-wise performance was highly variable. Lying achieved the highest mAP@50 at approximately 0.642, while Running was effectively undetected. Standing, Walking and Sitting achieved approximately 0.149, 0.297 and 0.232, respectively. 
+Action
+Validation Instances
+mAP@50
+Lying
+333
+0.642
+Sitting
+3,652
+0.232
+Standing
+8,288
+0.149
+Walking
+7,398
+0.297
+Running
+200
+≈0
+Overall
+—
+0.264
+The results indicate that the human-action detector was not sufficiently reliable for deployment in the current UAV prototype. The large variation between classes is associated with the uneven distribution of action instances, particularly the limited number of Running and Lying examples in the validation data.
+D. Current UAV Implementation Status
+The UAV platform was assembled and successfully flight-tested to verify the basic flight operation and mechanical functionality of the platform. However, the onboard edge-AI integration has not yet been completed. The Jetson Nano mounting and integration with the UAV are currently under development.
+The current implementation status is summarized in Table III.
+TABLE IIICURRENT IMPLEMENTATION STATUS
+Component
+Status
+UAV assembly
+Completed
+UAV flight test
+Completed
+D-Fire fire/smoke model training
+Completed
+Okutama-Action human-action model training
+Completed
+Human-action model validation
+Completed; low performance
+Jetson Nano mounting
+In progress
+Camera–Jetson integration on UAV
+Pending
+TensorRT deployment on Jetson Nano
+Pending
+Onboard AI inference
+Pending
+Aerial AI testing
+Pending
+At the current stage, the experimental results therefore consist of model-level evaluation and UAV platform testing performed independently. End-to-end aerial AI performance has not yet been evaluated and is not claimed in this work.
+V. CONCLUSION
+This work presents the development of an edge-AI based UAV system for aerial fire and smoke detection, with the broader objective of combining fire detection with human posture and action analysis. A lightweight YOLOv8n model was trained using the D-Fire dataset for the detection of fire and smoke. The UAV platform was assembled and successfully flight-tested, providing a physical platform for subsequent integration of the onboard edge-computing system.
+An additional human action detection module was investigated using the Okutama-Action aerial dataset, with Standing, Walking, Running, Lying and Sitting selected as target classes. The model achieved an overall validation mAP@50 of 0.264, with substantial variation between classes. The results indicated that the model was not sufficiently reliable for deployment in the current UAV prototype, particularly because of poor performance for some action classes.
+The current work therefore establishes the fire and smoke detection model and the UAV platform as the primary components of the prototype, while the human action analysis component remains an experimentally evaluated but deferred module. The next stage of development involves integrating the Jetson Nano and camera onto the UAV, generating the target TensorRT engine, and evaluating the complete edge-AI pipeline under aerial operating conditions. Further improvement of the human action module will also require additional experimentation with aerial data, class balancing and model adaptation.
+ACKNOWLEDGMENT
+The authors would like to express their sincere gratitude to Dr. Vijayaprabhakaran K for his valuable support and assistance in arranging and procuring the necessary components and hardware required for the development of the UAV platform. The authors also gratefully acknowledge Vellore Institute of Technology, Chennai, for providing the academic environment, facilities, and support necessary for carrying out this project. Their assistance and support significantly contributed to the progress and development of this work.
+REFERENCES
+[1] J. Redmon, S. Divvala, R. Girshick, and A. Farhadi, “You Only Look Once: Unified, Real-Time Object Detection,” in Proc. IEEE Conf. Computer Vision and Pattern Recognition (CVPR), Las Vegas, NV, USA, 2016, pp. 779–788, doi: 10.1109/CVPR.2016.91.
+[2] Google, “TensorFlow Lite: On-Device Machine Learning Runtime,” Google, 2019. [Online]. Available: https://www.tensorflow.org/lite
+[3] ArduPilot Development Team, “ArduPilot Autopilot Suite.” [Online]. Available: https://ardupilot.org
+[4] P. V. A. B. de Venâncio, A. C. Lisboa, and A. V. Barbosa, “An automatic fire detection system based on deep convolutional neural networks for low-power, resource-constrained devices,” Neural Computing and Applications, vol. 34, no. 18, pp. 15349–15368, 2022, doi: 10.1007/s00521-022-07467-z.
+[5] X. Chen, B. Hopkins, H. Wang, L. O'Neill, F. Afghah, A. Razi, P. Fule, J. Coen, E. Rowell, and A. Watts, “Wildland fire detection and monitoring using a drone-collected RGB/IR image dataset,” IEEE Access, vol. 10, pp. 121301–121317, 2022, doi: 10.1109/ACCESS.2022.3222805.
+[6] P. Zhu, L. Wen, X. Bian, H. Ling, and Q. Hu, “Vision Meets Drones: A Challenge,” arXiv preprint arXiv:1804.07437, 2018.
+[7] M. Barekatain, M. Martí, H.-F. Shih, S. Murray, K. Nakayama, Y. Matsuo, and H. Prendinger, “Okutama-Action: An Aerial View Video Dataset for Concurrent Human Action Detection,” in Proc. IEEE Conf. Computer Vision and Pattern Recognition Workshops (CVPRW), 2017, pp. 28–35, doi: 10.1109/CVPRW.2017.267.
+[8] M. N. A. Ramadan, T. Basmaji, A. Gad, H. Hamdan, B. T. Akgün, M. A. H. Ali, M. Alkhedher, and M. Ghazal, “Towards early forest fire detection and prevention using AI-powered drones and the IoT,” Internet of Things, vol. 27, p. 101248, 2024, doi: 10.1016/j.iot.2024.101248.
